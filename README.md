@@ -5,7 +5,6 @@ Aplicación web que calcula la liquidación de fin de contrato y los recargos po
 Asignatura: Derecho Empresarial e Informático – UGB
 Actividad: Bloque 2 – Actividad 2 – Calculando prestaciones laborales
 
-**Enlace:** https://nelcyavaloss.github.io/Lab-Derecho/
 
 ## ¿Qué calcula?
 
