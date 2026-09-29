@@ -2,7 +2,7 @@
 
 Aplicación web que calcula la liquidación de fin de contrato y los recargos por jornadas especiales, con las fórmulas del Código de Trabajo de El Salvador.
 
-Asignatura: Derecho Empresarial e Informático – UGB
+Asignatura: Derecho Empresarial – UGB
 
 Actividad: Bloque 2 – Actividad 2 – Calculando prestaciones laborales
 
