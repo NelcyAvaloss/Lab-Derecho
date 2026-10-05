@@ -2,10 +2,549 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="refresh" content="0; url=Calculadora%20de%20prestaciones%20laborales%20%E2%80%93%20El%20Salvador.html">
-<title>Calculadora de prestaciones laborales</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora de prestaciones laborales – El Salvador</title>
+<style>
+  :root{
+    --bg:#F0F1F3; --panel:#FFFFFF; --ink:#1A2033; --muted:#5B6479;
+    --blue:#4B5563; --blue-dark:#272E36; --bluw:#1c44bc; --line:#D7D9DD; --soft:#E6E8EB; --ok:#1F7A4D;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;line-height:1.5}
+  .franja{height:6px;background:repeating-linear-gradient(90deg,var(--blue) 0 40px,#fff 40px 44px,var(--blue) 44px 84px,#fff 84px 88px)}
+  .topbar{background:var(--blue-dark);color:#fff;font-size:.78rem;padding:6px 24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}
+  .topbar b{font-weight:700}
+  header{background:var(--blue);color:#fff;border-left:14px solid var(--blue);padding:22px 24px;display:flex;gap:16px;align-items:center}
+  .sello{flex:0 0 auto;width:62px;height:62px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;border:3px solid var(--red);padding:3px}
+  .sello img{width:100%;height:100%;object-fit:contain}
+  header h1{margin:0;font-size:clamp(1.3rem,3vw,1.9rem);font-weight:600}
+  header p{margin:4px 0 0;opacity:.9;max-width:70ch}
+  .vigencia{display:inline-block;margin-top:8px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.4);border-radius:3px;padding:3px 9px;font-size:.76rem}
+  .checklist{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px;margin-top:8px}
+  @media (max-width:520px){.checklist{grid-template-columns:1fr}}
+  .checklist label{display:flex;align-items:center;gap:8px;font-weight:500;font-size:.88rem;margin:0;border:0;padding:3px 0}
+  .contador{font-size:.82rem;color:var(--blue-dark);font-weight:700;margin-top:6px}
+  select{width:100%;font:inherit;padding:8px 10px;border:1.5px solid var(--line);border-radius:4px;background:#fff}
+  main{max-width:1180px;margin:0 auto;padding:22px 18px 50px;display:grid;gap:22px;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);align-items:start}
+  @media (max-width:900px){main{grid-template-columns:1fr}}
+  fieldset{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--blue);border-radius:6px;margin:0 0 16px;padding:14px 18px 18px}
+  legend{font-weight:700;color:var(--blue-dark);padding:0 8px;font-size:1.02rem}
+  label{display:block;font-size:.9rem;margin:10px 0 4px;font-weight:600}
+  .hint{font-weight:400;color:var(--muted);font-size:.82rem}
+  input[type=number],input[type=text],input[type=date]{width:100%;font:inherit;padding:8px 10px;border:1.5px solid var(--line);border-radius:4px;background:#fff}
+  input:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid #8C97FF;outline-offset:2px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media (max-width:520px){.grid2{grid-template-columns:1fr}}
+  .seg{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+  .seg label{margin:0;display:flex;align-items:center;gap:8px;border:1.5px solid var(--line);border-radius:4px;padding:9px 14px;cursor:pointer;font-weight:600;background:#fff}
+  .seg input:checked + span{color:var(--blue-dark)}
+  .seg label:has(input:checked){border-color:var(--blue);background:var(--soft)}
+  .na{display:flex;align-items:center;gap:8px;margin:12px 0 0;font-weight:600}
+  details{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 18px;margin-bottom:16px}
+  summary{cursor:pointer;font-weight:700;color:var(--blue-dark)}
+  .actions{display:flex;gap:10px;flex-wrap:wrap}
+  button{font:inherit;font-weight:700;padding:11px 22px;border-radius:4px;cursor:pointer;border:2px solid var(--blue)}
+  .primary{background:var(--blue);color:#fff}
+  .primary:hover{background:var(--blue-dark)}
+  .ghost{background:#fff;color:var(--blue-dark)}
+  .error{color:var(--red);font-weight:600;margin:10px 0 0;min-height:1.2em}
+  aside{position:sticky;top:14px}
+  @media (max-width:900px){aside{position:static}}
+  .results{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--red);border-radius:6px;padding:16px 18px}
+  .results h2{margin:0 0 6px;font-size:1.1rem;color:var(--red)}
+  .empty{color:var(--muted);margin:8px 0}
+  table{width:100%;border-collapse:collapse;margin-top:6px}
+  td{padding:7px 0;border-bottom:1px solid var(--line);vertical-align:top}
+  td:last-child{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;padding-left:12px}
+  td small{display:block;color:var(--muted);font-size:.78rem}
+  tr.total td{border-bottom:none;border-top:3px double var(--ink);font-weight:700;font-size:1.2rem;font-family:Georgia,serif;padding-top:12px}
+  .sub{margin-top:16px;font-weight:700;color:var(--blue-dark)}
+  .note{font-size:.8rem;color:var(--muted);margin-top:10px}
+  [hidden]{display:none!important}
+
+  /* ===== Comprobante (solo impresión / PDF) ===== */
+  #comprobante{display:none}
+  @media print{
+    @page{size:letter;margin:16mm}
+    body{background:#fff}
+    header,main{display:none!important}
+    #comprobante{display:block;font-family:Arial,Helvetica,sans-serif;color:#000;font-size:10.5pt}
+    #comprobante h1{font-size:15pt;text-align:center;margin:0}
+    #comprobante h3{font-size:11pt;margin:14px 0 4px;border-bottom:1.5px solid #000;padding-bottom:2px}
+    #comprobante .center{text-align:center;margin:2px 0 8px}
+    #comprobante table td{padding:3px 0;border-bottom:1px solid #ccc}
+    #comprobante table td:last-child{text-align:right}
+    #comprobante tr.tot td{font-weight:700;border-top:2px solid #000}
+    #comprobante .firmas{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:22px}
+    #comprobante .firmas p{margin:14px 0 0}
+    #comprobante .legal{font-size:8.5pt;margin-top:16px;border:1px solid #000;padding:6px}
+    #comprobante .brk{break-before:page}
+  }
+</style>
 </head>
 <body>
-<p><a href="Calculadora%20de%20prestaciones%20laborales%20%E2%80%93%20El%20Salvador.html">Abrir la calculadora</a></p>
+
+<div class="franja"></div>
+<header>
+  <div class="sello">
+    <img src="data:image/png;base64,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" alt="Escudo de la República de El Salvador" width="56" height="56">
+  </div>
+  <div>
+    <h1>Calculadora de prestaciones laborales</h1>
+    <p>Liquidación de fin de contrato y recargos por jornadas especiales, conforme al Código de Trabajo de El Salvador y la Ley Reguladora de la Prestación Económica por Renuncia Voluntaria.</p>
+  </div>
+</header>
+
+<main>
+  <!-- ================= FORMULARIO ================= -->
+  <section aria-label="Formulario">
+    <fieldset>
+      <legend>Datos financieros y antigüedad</legend>
+      <label for="salario">Ingreso mensual (USD)</label>
+      <input type="number" id="salario" min="0" step="0.01" placeholder="Ej. 600.00">
+      <div class="grid2">
+        <div>
+          <label for="anios">Años laborados <span class="hint">(entero)</span></label>
+          <input type="number" id="anios" min="0" step="1" placeholder="Ej. 6">
+        </div>
+        <div>
+          <label for="meses">Meses laborados <span class="hint">(0 a 11)</span></label>
+          <input type="number" id="meses" min="0" max="11" step="1" placeholder="Ej. 9">
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Causa de finalización de la relación laboral</legend>
+      <div class="seg" role="radiogroup" aria-label="Tipo de cierre">
+        <label><input type="radio" name="causa" value="despido" checked><span>Despido injustificado</span></label>
+        <label><input type="radio" name="causa" value="renuncia"><span>Renuncia voluntaria</span></label>
+      </div>
+
+      <!-- Nuevo bloque condicional para la Renuncia -->
+      <div id="opcionesRenuncia" hidden style="margin-top: 16px; padding: 12px; background: var(--soft); border-radius: 4px; border: 1px solid var(--line);">
+        <label>¿Informó al patrono con el preaviso de ley? (15 días de anticipación) <span class="hint">Requisito obligatorio para tener derecho a compensación</span></label>
+        <div class="seg" role="radiogroup" style="margin-top: 6px;">
+          <label><input type="radio" name="preaviso" value="si" checked><span>Sí</span></label>
+          <label><input type="radio" name="preaviso" value="no"><span>No</span></label>
+        </div>
+        
+        <div style="margin-top: 14px;">
+          <label for="motivoRenuncia">¿Por qué renuncia? <span class="hint">(Opcional)</span></label>
+          <input type="text" id="motivoRenuncia" placeholder="Escriba el motivo de la renuncia voluntaria">
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Jornadas extraordinarias y días especiales</legend>
+      <div class="grid2">
+        <div>
+          <label for="hd">Horas extras diurnas</label>
+          <input type="number" id="hd" class="extra" min="0" step="0.5" value="0">
+        </div>
+        <div>
+          <label for="hn">Horas extras nocturnas <span class="hint">(7:00 p.m. a 6:00 a.m.)</span></label>
+          <input type="number" id="hn" class="extra" min="0" step="0.5" value="0">
+        </div>
+        <div>
+          <label for="des">Días de descanso semanal laborados</label>
+          <input type="number" id="des" class="extra" min="0" step="1" value="0">
+        </div>
+      </div>
+      <label class="na"><input type="checkbox" id="noAplica"> No aplica (no hubo horas extras ni días especiales)</label>
+      <label style="margin-top:14px">Días de asueto laborados <span class="hint">(Art. 190 CT — marca los que aplican, en vez de contarlos a mano)</span></label>
+      <div class="checklist" id="asuList">
+        <label><input type="checkbox" class="asuChk" value="1"><span>1 de enero</span></label>
+        <label><input type="checkbox" class="asuChk" value="3"><span>Jueves, viernes y sábado santo</span></label>
+        <label><input type="checkbox" class="asuChk" value="1"><span>1.° de mayo</span></label>
+        <label><input type="checkbox" class="asuChk" value="1"><span>6 de agosto (Día del Salvador del Mundo)</span></label>
+        <label><input type="checkbox" class="asuChk" value="1"><span>15 de septiembre</span></label>
+        <label><input type="checkbox" class="asuChk" value="1"><span>2 de noviembre</span></label>
+        <label><input type="checkbox" class="asuChk" value="1"><span>25 de diciembre</span></label>
+        <label><input type="checkbox" class="asuChk" value="1"><span>Fiesta patronal local (1 día, si aplica)</span></label>
+      </div>
+      <label for="asu" style="margin-top:10px">Días de asueto laborados <span class="hint">(total — se autocompleta al marcar arriba, o edítalo directamente)</span></label>
+      <input type="number" id="asu" class="extra" min="0" step="1" value="0">
+    </fieldset>
+
+    <details>
+      <summary>Datos opcionales para el comprobante</summary>
+      <label for="nombre">Persona trabajadora</label>
+      <input type="text" id="nombre" placeholder="Nombre completo">
+      <label for="patrono">Patrono</label>
+      <input type="text" id="patrono" placeholder="Nombre de la empresa">
+      <label for="cargo">Cargo desempeñado</label>
+      <input type="text" id="cargo">
+      <div class="grid2">
+        <div>
+          <label for="fIng">Fecha de ingreso <span class="hint">(rellena años y meses)</span></label>
+          <input type="date" id="fIng">
+        </div>
+        <div>
+          <label for="fTer">Fecha de terminación</label>
+          <input type="date" id="fTer">
+        </div>
+      </div>
+      <label for="sector">Sector económico <span class="hint">autocompleta el salario mínimo legal</span></label>
+      <select id="sector">
+        <optgroup label="Comercio, servicios e industria">
+          <option value="408.80" selected>Comercio — $408.80</option>
+          <option value="408.80">Servicios — $408.80</option>
+          <option value="408.80">Industria — $408.80</option>
+          <option value="408.80">Agroindustria — $408.80</option>
+          <option value="408.80">Ingenios azucareros — $408.80</option>
+        </optgroup>
+        <optgroup label="Maquila">
+          <option value="402.32">Maquila textil y confección — $402.32</option>
+        </optgroup>
+        <optgroup label="Agropecuario">
+          <option value="305.23">Agropecuario y ganadería — $305.23</option>
+          <option value="305.23">Pesca — $305.23</option>
+          <option value="305.23">Recolección de café — $305.23</option>
+          <option value="305.23">Recolección de caña de azúcar — $305.23</option>
+          <option value="305.23">Otras actividades agrícolas — $305.23</option>
+        </optgroup>
+        <option value="otro">Otro / personalizado</option>
+      </select>
+      <label for="smm">Salario mínimo aplicable (USD) <span class="hint">para los topes legales (Art. 58 CT / Decreto 592)</span></label>
+      <input type="number" id="smm" min="0" step="0.01" value="408.80">
+    </details>
+
+    <div class="actions">
+      <button class="primary" id="btnCalc" type="button">Calcular liquidación</button>
+      <button class="ghost" id="btnLimpiar" type="button">Limpiar</button>
+    </div>
+    <p class="error" id="error" role="alert"></p>
+  </section>
+
+  <!-- ================= RESULTADOS ================= -->
+  <aside aria-live="polite">
+    <div class="results">
+      <h2>Resultado de la liquidación</h2>
+      <p class="empty" id="vacio">Llena el formulario y presiona “Calcular liquidación”.</p>
+      <div id="panel" hidden>
+        <table id="tabla"></table>
+        <div class="sub">Descuentos de ley y neto</div>
+        <table id="tablaNeto"></table>
+        <div class="actions" style="margin-top:14px">
+          <button class="ghost" id="btnPdf" type="button">Descargar comprobante (PDF)</button>
+        </div>
+        <p class="note">Al presionar el botón, elige “Guardar como PDF” en la ventana de impresión. Este cálculo es informativo y no sustituye el finiquito laboral.</p>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<footer style="max-width:1180px;margin:0 auto;padding:0 18px 36px;color:var(--muted);font-size:.78rem">
+  <hr style="border:none;border-top:1px solid var(--line);margin:0 0 14px">
+  <p><b>Base legal:</b> Código de Trabajo de El Salvador (Decreto Legislativo N.° 15, 1972); Ley Reguladora de la Prestación Económica por Renuncia Voluntaria (Decreto N.° 592, 2014); tarifas de salario mínimo vigentes desde el 1 de junio de 2025 según decreto ejecutivo publicado en el Diario Oficial. Verifique siempre las tarifas vigentes en el sitio del Ministerio de Trabajo y Previsión Social (mtps.gob.sv).</p>
+  <p><b>Nota — Quincena 25:</b> la Ley Especial Quincena Veinticinco (Decreto Legislativo N.° 499, 14 de enero de 2026) creó un ingreso adicional del 50 % del salario mensual, pagadero entre el 15 y el 25 de enero, para quienes ganan hasta $1,500. Es obligatoria en el sector público desde 2026 y en el sector privado desde 2027 (voluntaria en 2026). Si el despido con responsabilidad patronal ocurre hasta el 25 de enero inclusive, la persona trabajadora conserva el derecho a este pago; este monto no está incluido en el cálculo automático anterior y debe verificarse aparte.</p>
+  <p>Esta calculadora es una herramienta educativa de referencia y no sustituye el cálculo oficial de la Dirección General de Inspección de Trabajo ni asesoría legal profesional.</p>
+  <p style="margin-top:10px"><b>Fuentes consultadas:</b><br>
+  Código de Trabajo, Decreto N.° 15 (1972), Asamblea Legislativa de El Salvador.<br>
+  Ley Reguladora de la Prestación Económica por Renuncia Voluntaria, Decreto N.° 592 (2014).<br>
+  Ley Especial Quincena Veinticinco, Decreto Legislativo N.° 499 (14 de enero de 2026), Diario Oficial N.° 8, Tomo 450.<br>
+  Decreto ejecutivo de tarifas de salario mínimo vigentes desde el 1 de junio de 2025, Ministerio de Trabajo y Previsión Social.<br>
+  Material de clase: <i>Bloque 3 – Derecho Empresarial e Informático</i>, Dirección de Educación Virtual, Universidad Gerardo Barrios.</p>
+</footer>
+
+<div id="comprobante"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const r2 = n => Math.round((n + Number.EPSILON) * 100) / 100;
+const fmt = n => "$" + n.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ---------- Número a letras (para el monto neto) ---------- */
+const U = ["","UN","DOS","TRES","CUATRO","CINCO","SEIS","SIETE","OCHO","NUEVE","DIEZ","ONCE","DOCE","TRECE","CATORCE","QUINCE","DIECISEIS","DIECISIETE","DIECIOCHO","DIECINUEVE","VEINTE","VEINTIUN","VEINTIDOS","VEINTITRES","VEINTICUATRO","VEINTICINCO","VEINTISEIS","VEINTISIETE","VEINTIOCHO","VEINTINUEVE"];
+const D = ["","","","TREINTA","CUARENTA","CINCUENTA","SESENTA","SETENTA","OCHENTA","NOVENTA"];
+const C = ["","CIENTO","DOSCIENTOS","TRESCIENTOS","CUATROCIENTOS","QUINIENTOS","SEISCIENTOS","SETECIENTOS","OCHOCIENTOS","NOVECIENTOS"];
+function menor1000(n){
+  if (n === 100) return "CIEN";
+  let s = "", h = Math.floor(n / 100), r = n % 100;
+  if (h) s += C[h] + " ";
+  if (r < 30) s += U[r];
+  else { s += D[Math.floor(r / 10)]; if (r % 10) s += " Y " + U[r % 10]; }
+  return s.trim();
+}
+function letras(n){
+  if (n === 0) return "CERO";
+  const mill = Math.floor(n / 1e6), mil = Math.floor((n % 1e6) / 1000), r = n % 1000;
+  let s = "";
+  if (mill) s += (mill === 1 ? "UN MILLON" : menor1000(mill) + " MILLONES") + " ";
+  if (mil) s += (mil === 1 ? "MIL" : menor1000(mil) + " MIL") + " ";
+  if (r) s += menor1000(r);
+  return s.trim();
+}
+function montoLetras(n){
+  const ent = Math.floor(n), cent = Math.round((n - ent) * 100);
+  return `${letras(ent)} ${String(cent).padStart(2, "0")}/100 DOLARES DE LOS ESTADOS UNIDOS DE AMERICA`;
+}
+
+/* ---------- ISR: retención mensual ---------- */
+function isr(base){
+  if (base <= 550) return 0;
+  if (base <= 895.24) return (base - 550) * 0.10 + 17.67;
+  if (base <= 2038.10) return (base - 895.24) * 0.20 + 60;
+  return (base - 2038.10) * 0.30 + 288.57;
+}
+
+/* ---------- Interfaz ---------- */
+let ultimo = null;
+
+// Mostrar u ocultar opciones de renuncia
+document.querySelectorAll('input[name="causa"]').forEach(radio => {
+  radio.addEventListener('change', e => {
+    const container = $("opcionesRenuncia");
+    if(e.target.value === 'renuncia') {
+      container.hidden = false;
+    } else {
+      container.hidden = true;
+      $("motivoRenuncia").value = "";
+      document.querySelector('input[name="preaviso"][value="si"]').checked = true;
+      $("motivoRenuncia").disabled = false;
+    }
+  });
+});
+
+// Desactivar o activar el cuadro de motivo si seleccionan que NO dieron preaviso
+document.querySelectorAll('input[name="preaviso"]').forEach(radio => {
+  radio.addEventListener('change', e => {
+    if(e.target.value === 'no') {
+      $("motivoRenuncia").disabled = true; // Bloquea ingresar motivo si no hay derecho a renuncia
+    } else {
+      $("motivoRenuncia").disabled = false;
+    }
+  });
+});
+
+$("noAplica").addEventListener("change", e => {
+  document.querySelectorAll(".extra").forEach(i => { i.disabled = e.target.checked; if (e.target.checked) i.value = 0; });
+  document.querySelectorAll(".asuChk").forEach(c => { c.disabled = e.target.checked; if (e.target.checked) c.checked = false; });
+  contarAsuetos();
+});
+
+function contarAsuetos(){
+  const n = [...document.querySelectorAll(".asuChk:checked")].reduce((s, c) => s + Number(c.value), 0);
+  $("asu").value = n;
+  return n;
+}
+document.querySelectorAll(".asuChk").forEach(c => c.addEventListener("change", contarAsuetos));
+
+$("sector").addEventListener("change", e => {
+  if (e.target.value !== "otro") $("smm").value = e.target.value;
+});
+
+// Fechas -> años y meses
+function fechasAAntiguedad(){
+  const a = $("fIng").value, b = $("fTer").value;
+  if (!a || !b) return;
+  const d1 = new Date(a), d2 = new Date(b);
+  if (d2 < d1) return;
+  let meses = (d2.getFullYear() - d1.getFullYear()) * 12 + (d2.getMonth() - d1.getMonth());
+  if (d2.getDate() < d1.getDate()) meses--;
+  $("anios").value = Math.floor(meses / 12);
+  $("meses").value = meses % 12;
+}
+$("fIng").addEventListener("change", fechasAAntiguedad);
+$("fTer").addEventListener("change", fechasAAntiguedad);
+
+$("btnLimpiar").addEventListener("click", () => {
+  document.querySelectorAll("input[type=number],input[type=text],input[type=date]").forEach(i => { if (i.id !== "smm") i.value = ""; });
+  ["hd","hn","des","asu"].forEach(id => { $(id).value = 0; $(id).disabled = false; });
+  document.querySelectorAll(".asuChk").forEach(c => { c.checked = false; c.disabled = false; });
+  $("sector").value = "408.80"; $("smm").value = "408.80";
+  $("noAplica").checked = false;
+  $("opcionesRenuncia").hidden = true;
+  $("motivoRenuncia").disabled = false;
+  document.querySelector('input[name="preaviso"][value="si"]').checked = true;
+  contarAsuetos();
+  $("error").textContent = "";
+  $("panel").hidden = true; $("vacio").hidden = false;
+  ultimo = null;
+});
+
+$("btnCalc").addEventListener("click", calcular);
+$("btnPdf").addEventListener("click", () => { if (ultimo) window.print(); });
+
+function calcular(){
+  const err = $("error"); err.textContent = "";
+  const salario = parseFloat($("salario").value);
+  const anios = parseInt($("anios").value, 10);
+  const meses = parseInt($("meses").value, 10);
+  const smm = parseFloat($("smm").value) || 408.80;
+  
+  const causa = document.querySelector("input[name=causa]:checked").value;
+  const preaviso = document.querySelector("input[name=preaviso]:checked") ? document.querySelector("input[name=preaviso]:checked").value : "si";
+  const motivoRenuncia = $("motivoRenuncia").value.trim();
+  
+  const na = $("noAplica").checked;
+  const num = id => na ? 0 : (parseFloat($(id).value) || 0);
+  const hd = num("hd"), hn = num("hn"), des = num("des"), asu = num("asu");
+
+  if (!(salario > 0)) return err.textContent = "Escribe un ingreso mensual mayor que 0.";
+  if (isNaN(anios) || anios < 0) return err.textContent = "Escribe los años laborados (número entero, 0 o más).";
+  if (isNaN(meses) || meses < 0 || meses > 11) return err.textContent = "Los meses laborados deben ser un número entero de 0 a 11.";
+  if (anios === 0 && meses === 0) return err.textContent = "La antigüedad debe ser de al menos 1 mes.";
+  if ([hd, hn, asu, des].some(v => v < 0)) return err.textContent = "Las horas y los días no pueden ser negativos.";
+
+  const sbd = salario / 30;                     // SBD = SBM / 30
+  const tiempo = anios + meses / 12;
+
+  // Vacación proporcional: SBD x 15 x 1.3 x meses / 12
+  const vac = r2(sbd * 15 * 1.3 * meses / 12);
+
+  // Aguinaldo proporcional: SBD x días según antigüedad x meses / 12
+  const diasAg = tiempo > 10 ? 21 : (tiempo >= 3 ? 19 : 15);
+  const agui = r2(sbd * diasAg * meses / 12);
+
+  // Indemnización / compensación
+  let indem = 0, etiquetaInd, baseInd, nota = "";
+  if (causa === "despido"){
+    
+    // AQUÍ SE CALCULA EL TOPE LEGAL PARA DESPIDO
+    // El tope es 4 salarios mínimos vigentes. Ej: Si gana 10,000, se calculará base de 408.80 x 4 = 1635.20
+    const base = Math.min(salario, 4 * smm);                
+    indem = Math.max(base * tiempo, base / 2);              // 30 días por año, mínimo 15 días
+    
+    etiquetaInd = "Indemnización por despido injustificado";
+    baseInd = "Art. 58 CT";
+    
+    if (salario > 4 * smm) {
+      nota = `Se aplicó el tope legal de 4 salarios mínimos vigentes (${fmt(4 * smm)}).`;
+    }
+    
+  } else {
+    etiquetaInd = "Compensación económica por renuncia voluntaria";
+    baseInd = "Decreto 592 (2014), Arts. 2 y 4";
+    
+    // AQUÍ SE "BLOQUEA" EL MONTO A CERO SI NO HAY PREAVISO
+    if (preaviso === "no") {
+      indem = 0;
+      nota = "Derecho bloqueado: No le corresponde compensación por no haber dado el preaviso de ley al patrono.";
+    }
+    else if (tiempo < 2){ 
+      indem = 0; 
+      nota = "La renuncia solo genera compensación con 2 años o más de servicio continuo."; 
+    }
+    else {
+      // Tope legal de 2 salarios mínimos para el caso de renuncia voluntaria
+      const base = Math.min(salario, 2 * smm);              
+      indem = base / 30 * 15 * tiempo;                      // 15 días por año
+      if (salario > 2 * smm) nota = `Se aplicó el tope legal de 2 salarios mínimos (${fmt(2 * smm)}).`;
+    }
+  }
+  indem = r2(indem);
+
+  const hed = r2(sbd / 8 * hd * 2);              // HE = H x HL x 2
+  const hen = r2(sbd / 8 * 1.25 * hn * 2);       // HN = HD x 1.25; luego recargo 100%
+  const asueto = r2(sbd * 2 * asu);              // SE = SBD x 2
+  const desc = r2(sbd * 1.5 * des);              // SDD = SBD x 1.5
+
+  const total = r2(vac + agui + indem + hed + hen + asueto + desc);
+
+  // Descuentos (informativos): la indemnización y el aguinaldo se tratan como exentos
+  const gravada = r2(vac + hed + hen + asueto + desc);
+  const exento = r2(indem + agui);
+  const isss = r2(Math.min(gravada, 1000) * 0.03);
+  const afp = r2(gravada * 0.0725);
+  const ret = r2(isr(Math.max(gravada - isss - afp, 0)));
+  const ded = r2(isss + afp + ret);
+  const neto = r2(total - ded);
+
+  ultimo = {salario, anios, meses, causa, preaviso, motivoRenuncia, vac, agui, indem, hed, hen, asueto, desc, total,
+            gravada, exento, isss, afp, ret, ded, neto, etiquetaInd, baseInd, diasAg,
+            datos: {nombre: $("nombre").value, patrono: $("patrono").value, cargo: $("cargo").value, fIng: $("fIng").value, fTer: $("fTer").value}};
+
+  const fila = (t, sub, v) => `<tr><td>${t}${sub ? `<small>${sub}</small>` : ""}</td><td>${fmt(v)}</td></tr>`;
+  $("tabla").innerHTML =
+    fila("Vacación proporcional", "Arts. 177 y 187 CT", vac) +
+    fila("Aguinaldo proporcional", `Arts. 196-198 CT (${diasAg} días según antigüedad)`, agui) +
+    fila(etiquetaInd, baseInd + (nota ? " · <strong style='color:var(--red)'>" + nota + "</strong>" : ""), indem) +
+    fila("Horas extras diurnas", "Art. 169 CT", hed) +
+    fila("Horas extras nocturnas", "Arts. 168 y 169 CT", hen) +
+    fila("Días de asueto laborados", "Art. 192 CT", asueto) +
+    fila("Días de descanso semanal laborados", "Arts. 175 y 176 CT", desc) +
+    `<tr class="total"><td>Monto total de la liquidación</td><td>${fmt(total)}</td></tr>`;
+
+  $("tablaNeto").innerHTML =
+    fila("Cotización ISSS (3 %, base máx. $1,000)", "", -isss).replace("$-", "-$") +
+    fila("Cotización AFP (7.25 %)", "", -afp).replace("$-", "-$") +
+    fila("Retención de ISR", "Art. 37 Ley de ISR", -ret).replace("$-", "-$") +
+    `<tr class="total"><td>Monto neto a pagar</td><td>${fmt(neto)}</td></tr>`;
+
+  $("vacio").hidden = true; $("panel").hidden = false;
+  armarComprobante();
+}
+
+/* ---------- Comprobante imprimible ---------- */
+function armarComprobante(){
+  const u = ultimo, d = u.datos;
+  const hoy = new Date();
+  const fechaTxt = hoy.toLocaleDateString("es-SV", {day: "2-digit", month: "long", year: "numeric"});
+  const fila = (t, b, v) => `<tr><td>${t}</td><td>${b}</td><td>${fmt(v)}</td></tr>`;
+  const fFmt = s => s ? new Date(s + "T00:00:00").toLocaleDateString("es-SV", {day: "2-digit", month: "long", year: "numeric"}) : "—";
+  const neg = v => "-" + fmt(v);
+  
+  const causaCierre = u.causa === "despido" ? "Despido sin causa justificada" : "Renuncia voluntaria";
+  let preavisoTxt = "";
+  if(u.causa === "renuncia") {
+    preavisoTxt = u.preaviso === "si" ? " (Se dio preaviso)" : " (SIN preaviso - Compensación bloqueada)";
+  }
+
+  $("comprobante").innerHTML = `
+    <h1>COMPROBANTE DE LIQUIDACIÓN DE PRESTACIONES LABORALES</h1>
+    <p class="center">República de El Salvador</p>
+
+    <h3>I. Datos de las partes</h3>
+    <table style="width:100%;border-collapse:collapse">
+      <tr><td>Persona trabajadora</td><td style="text-align:right">${esc(d.nombre || "—")}</td></tr>
+      <tr><td>Patrono</td><td style="text-align:right">${esc(d.patrono || "—")}</td></tr>
+      <tr><td>Cargo desempeñado</td><td style="text-align:right">${esc(d.cargo || "—")}</td></tr>
+      <tr><td>Salario mensual</td><td style="text-align:right">${fmt(u.salario)}</td></tr>
+      <tr><td>Fecha de ingreso</td><td style="text-align:right">${fFmt(d.fIng)}</td></tr>
+      <tr><td>Fecha de terminación</td><td style="text-align:right">${fFmt(d.fTer)}</td></tr>
+      <tr><td>Antigüedad reconocida</td><td style="text-align:right">${u.anios} años, ${u.meses} meses</td></tr>
+      <tr><td>Causa de terminación</td><td style="text-align:right">${causaCierre}${preavisoTxt}</td></tr>
+      ${u.causa === 'renuncia' && u.motivoRenuncia ? `<tr><td>Motivo de renuncia</td><td style="text-align:right">${esc(u.motivoRenuncia)}</td></tr>` : ''}
+    </table>
+
+    <h3>II. Desglose de prestaciones liquidadas</h3>
+    <table style="width:100%;border-collapse:collapse">
+      <tr><td><b>Concepto</b></td><td><b>Base legal</b></td><td><b>Monto</b></td></tr>
+      ${fila("Vacación proporcional", "Arts. 177 y 187 CT", u.vac)}
+      ${fila("Aguinaldo proporcional", "Arts. 196-198 CT", u.agui)}
+      ${fila(u.etiquetaInd, u.baseInd, u.indem)}
+      ${fila("Horas extras diurnas", "Art. 169 CT", u.hed)}
+      ${fila("Horas extras nocturnas", "Arts. 168 y 169 CT", u.hen)}
+      ${fila("Días de asueto laborados", "Art. 192 CT", u.asueto)}
+      ${fila("Días de descanso semanal laborados", "Arts. 175 y 176 CT", u.desc)}
+      <tr class="tot"><td colspan="2">TOTAL DEVENGADO (BRUTO)</td><td>${fmt(u.total)}</td></tr>
+    </table>
+
+    <h3>III. Deducciones de ley y neto a pagar</h3>
+    <p style="margin:4px 0">Remuneración gravada: ${fmt(u.gravada)}. Monto exento de ISR y de cotizaciones: ${fmt(u.exento)} (indemnización y aguinaldo).</p>
+    <table style="width:100%;border-collapse:collapse">
+      ${fila("Cotización ISSS (trabajador)", "Reglamento del ISSS, Art. 29", 0).replace(fmt(0), neg(u.isss))}
+      ${fila("Cotización AFP (trabajador)", "Ley del Sistema de Ahorro para Pensiones", 0).replace(fmt(0), neg(u.afp))}
+      ${fila("Retención de ISR", "Art. 37 Ley de ISR", 0).replace(fmt(0), neg(u.ret))}
+      ${fila("Total de deducciones", "", 0).replace(fmt(0), neg(u.ded))}
+      <tr class="tot"><td colspan="2">MONTO NETO A PAGAR</td><td>${fmt(u.neto)}</td></tr>
+    </table>
+    <p style="margin:6px 0"><b>Monto neto en letras:</b><br>${montoLetras(u.neto)}</p>
+
+    <div class="brk"></div>
+    <h3>IV. Declaración</h3>
+    <p>La persona trabajadora ${esc(d.nombre || "________________")} declara haber recibido el detalle de las prestaciones económicas que anteceden, calculadas conforme al Código de Trabajo de El Salvador, así como el desglose de las retenciones de ley aplicadas y el monto neto resultante. Este comprobante se suscribe en la fecha que se indica al pie de las firmas.</p>
+    <div class="firmas">
+      <div><b>Persona trabajadora</b><p>Nombre: ______________________</p><p>DUI: ___________________________</p><p>Fecha: __________________________</p></div>
+      <div><b>Patrono o representante legal</b><p>Nombre: ______________________</p><p>DUI: ___________________________</p><p>Fecha: __________________________</p></div>
+    </div>
+    <div class="legal"><b>Advertencia legal.</b> Este documento es un comprobante informativo del cálculo de prestaciones y NO constituye el finiquito laboral. Conforme al Art. 402 inciso 2 del Código de Trabajo, la renuncia, la terminación por mutuo consentimiento o el recibo de pago de prestaciones por despido sin causa legal solo tienen valor probatorio si constan en hojas extendidas por la Dirección General de Inspección de Trabajo o por los jueces con competencia en materia laboral, utilizadas dentro de los diez días siguientes a su expedición, o bien en documento privado autenticado ante notario. Se recomienda asesoría legal profesional antes de suscribir cualquier finiquito.</div>
+    <p style="font-size:8.5pt;color:#444">Generado el ${fechaTxt}</p>`;
+}
+</script>
 </body>
 </html>
