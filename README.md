@@ -27,5 +27,5 @@ Vacación y aguinaldo proporcionales, indemnización (despido) o compensación (
 ## Integrantes
 
 - Nelcy Nohemy Avalos
-- Andrea Patricia Ramos Hernández
+- Andrea Patricia Ramos Hernández  
 - Angel Mauricio Hernandez Amaya
